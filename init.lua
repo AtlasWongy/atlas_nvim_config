@@ -27,7 +27,12 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-    "neanias/everforest-nvim"
+    {
+        "neanias/everforest-nvim",
+        config = function()
+            vim.cmd.colorscheme("everforest")
+        end,
+    },
 })
 
-vim.cmd.colorscheme("everforest")
+
