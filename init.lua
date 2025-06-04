@@ -25,3 +25,9 @@ if not vim.loop.fs_stat(lazypath) then
     })
 end
 vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+    "neanias/everforest-nvim"
+})
+
+vim.cmd.colorscheme("everforest")
