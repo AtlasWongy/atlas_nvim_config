@@ -1,29 +1,30 @@
 -- Set up lazy nvim plugin manager                          
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then                      
-    vim.fn.system({                                         
-        "git",                                              
-        "clone",                                            
-        "--filter=blob:none",                               
-        "https://github.com/folke/lazy.nvim.git",           
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
         "--branch=stable", -- latest stable release         
-        lazypath,                                           
-    })                                                      
-end                                                         
-vim.opt.rtp:prepend(lazypath)                               
-                                                            
-require("lazy").setup({                                     
-    {                                                       
-        "neanias/everforest-nvim",                          
-        config = function()                                 
-            vim.cmd.colorscheme("everforest")               
-        end,                                                
+        lazypath,
+    })
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+    {
+        "neanias/everforest-nvim",
+        config = function()
+            vim.cmd.colorscheme("everforest")
+            -- vim.cmd.colorscheme("everforest")
+        end,
     },
     {
         "nvim-treesitter/nvim-treesitter",
         config = function()
             require("nvim-treesitter.configs").setup({
-                ensure_installed = { "rust", "c", "lua", "vim", "vimdoc", "query"},
+                ensure_installed = { "typescript", "rust", "c", "lua", "vim", "vimdoc", "query"},
                 auto_install = true,
                 highlight = {
                     enable = true
@@ -87,9 +88,62 @@ require("lazy").setup({
     },
     {
         "neovim/nvim-lspconfig",
-        config = function()
-            local lspconfig = require("lspconfig")
-            lspconfig.rust_analyzer.setup({})
-        end,
-    }
-})                                                          
+    },
+    {
+        "mrcjkb/rustaceanvim",
+        version = '^6', -- Recommended
+        lazy = false, -- This plugin is already lazy
+    },
+    {
+        "mason-org/mason.nvim",
+        opts = {}
+    },
+    {
+        "mason-org/mason-lspconfig.nvim",
+        opts = {
+            automatic_enable = {
+                exclude = { "rust_analyzer" }
+            }
+        },
+        dependencies = {
+            { "mason-org/mason.nvim", opts = {} },
+            "neovim/nvim-lspconfig",
+        },
+    },
+    {
+        "saghen/blink.cmp",
+        dependencies = { "rafamadriz/friendly-snippets" },
+
+        version = "1.*",
+
+        opts = {
+            keymap = { preset = "super-tab" },
+            appearance = {
+                nerd_font_variant = "mono",
+
+            },
+            completion = { documentation = { auto_show = true } },
+            sources = {
+                default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+                providers = {
+                    lazydev = {
+                        name = "LazyDev",
+                        module = "lazydev.integrations.blink",
+                        score_offset = 100,
+                    }
+                }
+            },
+            fuzzy = { implementation = "prefer_rust_with_warning" }
+        },
+        opts_extend = { "sources.default" }
+    },
+    {
+        "folke/lazydev.nvim",
+        ft = "lua",
+        opts = {
+            library = {
+                { path = "${3rd}/luv/library", words = { "vim%.uv" } }
+            },
+        },
+    },
+})
